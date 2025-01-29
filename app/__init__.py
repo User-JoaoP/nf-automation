@@ -1,8 +1,7 @@
-# app/__init__.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
-from dotenv import load_dotenv  # Adicione esta linha
+from dotenv import load_dotenv
 
 load_dotenv()  # Carrega variáveis do .env
 
@@ -17,8 +16,8 @@ def create_app():
     
     db.init_app(app)
 
-    with app.app_context():  # Garanta o contexto durante a inicialização
-        from app import routes, models
-        db.create_all()  # Opcional: Cria tabelas se não existirem
-    
+    with app.app_context():
+        from app import models  # Importação crítica
+        db.create_all()  # Cria tabelas se não existirem
+
     return app
