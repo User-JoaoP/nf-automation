@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash
 from datetime import datetime
-from app import db
 from app.models import Fornecedor
+from app import db
 
 def init_routes(app):
     @app.route('/')
