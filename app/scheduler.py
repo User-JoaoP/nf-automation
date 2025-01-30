@@ -1,30 +1,26 @@
 import schedule
 import time
-from threading import Thread
 from app.email_handler import verificar_emails
-from app.models import Fornecedor, db
+from app import create_app
+from app.email_sender import enviar_cobrancas
 
 def iniciar_agendador():
-    def tarefa_verificar_emails():
-        with app.app_context():
-            # Exemplo: verifica e-mails a cada 1 hora
-            emails = verificar_emails("tifinan@hpeautos.com.br", "SUA_SENHA")
-            # Lógica para registrar no banco de dados
+    with app.app_context():
+        schedule.every(1).hours.do(verificar_emails)
+        schedule.every().day.at("09:00").do(enviar_cobrancas)  # Envia às 9h
+        
 
-    def tarefa_enviar_cobrancas():
-        with app.app_context():
-            # Exemplo: verifica prazos diariamente às 8h
-            fornecedores_pendentes = Fornecedor.query.filter_by(status='pendente').all()
-            for fornecedor in fornecedores_pendentes:
-                # Lógica para enviar e-mail de cobrança
-                pass
+app = create_app()
 
-    schedule.every().hour.do(tarefa_verificar_emails)
-    schedule.every().day.at("08:00").do(tarefa_enviar_cobrancas)
+def iniciar_agendador():
+    with app.app_context():
+        # Verifica e-mails a cada 1 hora
+        schedule.every(1).hours.do(verificar_emails)
 
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 
-# Inicia o agendador em uma thread separada
+# Inicia em uma thread separada (opcional)
+from threading import Thread
 Thread(target=iniciar_agendador).start()
