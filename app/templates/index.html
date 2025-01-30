@@ -10,8 +10,6 @@
   <body>
     <div class="container mt-5">
       <h1>Fornecedores Cadastrados</h1>
-
-      <!-- Mensagens de feedback -->
       {% with messages = get_flashed_messages(with_categories=true) %} {% if
       messages %} {% for category, message in messages %}
       <div
@@ -27,14 +25,11 @@
         ></button>
       </div>
       {% endfor %} {% endif %} {% endwith %}
-
       <a
         href="{{ url_for('adicionar_fornecedor') }}"
         class="btn btn-success mb-3"
+        >Adicionar Fornecedor</a
       >
-        Adicionar Fornecedor
-      </a>
-
       <table class="table table-striped">
         <thead class="table-dark">
           <tr>
@@ -42,6 +37,7 @@
             <th>E-mail</th>
             <th>Prazo</th>
             <th>Status</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -57,10 +53,24 @@
                 {{ fornecedor.status }}
               </span>
             </td>
+            <!-- Botões de ação DENTRO do loop -->
+            <td>
+              <a
+                href="{{ url_for('editar_fornecedor', id=fornecedor.id) }}"
+                class="btn btn-sm btn-warning"
+                >Editar</a
+              >
+              <a
+                href="{{ url_for('excluir_fornecedor', id=fornecedor.id) }}"
+                class="btn btn-sm btn-danger"
+                onclick="return confirm('Tem certeza que deseja excluir?')"
+                >Excluir</a
+              >
+            </td>
           </tr>
           {% else %}
           <tr>
-            <td colspan="4" class="text-center">
+            <td colspan="5" class="text-center">
               Nenhum fornecedor cadastrado.
             </td>
           </tr>
@@ -68,21 +78,6 @@
         </tbody>
       </table>
     </div>
-
-    <!-- Scripts do Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
-  <td>
-    <a
-      href="{{ url_for('editar_fornecedor', id=fornecedor.id) }}"
-      class="btn btn-sm btn-warning"
-      >Editar</a
-    >
-    <a
-      href="{{ url_for('excluir_fornecedor', id=fornecedor.id) }}"
-      class="btn btn-sm btn-danger"
-      onclick="return confirm('Tem certeza que deseja excluir?')"
-      >Excluir</a
-    >
-  </td>
 </html>

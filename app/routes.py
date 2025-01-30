@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash
 from datetime import datetime
-from app.models import Fornecedor
 from app import db
+from app.models import Fornecedor
 
 def init_routes(app):
     @app.route('/')
@@ -20,7 +20,6 @@ def init_routes(app):
                 nome = request.form['nome']
                 email = request.form['email']
                 prazo_str = request.form['prazo']
-                
                 prazo = datetime.strptime(prazo_str, '%Y-%m-%d').date()
                 
                 novo_fornecedor = Fornecedor(
@@ -32,7 +31,6 @@ def init_routes(app):
                 
                 db.session.add(novo_fornecedor)
                 db.session.commit()
-                
                 flash('Fornecedor adicionado com sucesso!', 'success')
                 return redirect(url_for('index'))
                 
@@ -41,7 +39,8 @@ def init_routes(app):
                 flash(f'Erro ao adicionar fornecedor: {str(e)}', 'danger')
         
         return render_template('add_fornecedor.html')
-    
+
+    # ▼▼▼ Rotas de Edição/Exclusão ▼▼▼
     @app.route('/editar/<int:id>', methods=['GET', 'POST'])
     def editar_fornecedor(id):
         fornecedor = Fornecedor.query.get_or_404(id)
@@ -55,7 +54,7 @@ def init_routes(app):
                 return redirect(url_for('index'))
             except Exception as e:
                 db.session.rollback()
-                flash(f'Erro ao atualizar: {str(e)}', 'danger')
+                flash(f'Erro ao atualizar fornecedor: {str(e)}', 'danger')
         return render_template('editar_fornecedor.html', fornecedor=fornecedor)
 
     @app.route('/excluir/<int:id>')
@@ -67,5 +66,5 @@ def init_routes(app):
             flash('Fornecedor excluído com sucesso!', 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f'Erro ao excluir: {str(e)}', 'danger')
+            flash(f'Erro ao excluir fornecedor: {str(e)}', 'danger')
         return redirect(url_for('index'))
