@@ -43,29 +43,29 @@ def init_routes(app):
         return render_template('add_fornecedor.html')
     
     @app.route('/editar/<int:id>', methods=['GET', 'POST'])
-def editar_fornecedor(id):
-    fornecedor = Fornecedor.query.get_or_404(id)
-    if request.method == 'POST':
+    def editar_fornecedor(id):
+        fornecedor = Fornecedor.query.get_or_404(id)
+        if request.method == 'POST':
+            try:
+                fornecedor.nome = request.form['nome']
+                fornecedor.email = request.form['email']
+                fornecedor.prazo = datetime.strptime(request.form['prazo'], '%Y-%m-%d').date()
+                db.session.commit()
+                flash('Fornecedor atualizado com sucesso!', 'success')
+                return redirect(url_for('index'))
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Erro ao atualizar: {str(e)}', 'danger')
+        return render_template('editar_fornecedor.html', fornecedor=fornecedor)
+
+    @app.route('/excluir/<int:id>')
+    def excluir_fornecedor(id):
+        fornecedor = Fornecedor.query.get_or_404(id)
         try:
-            fornecedor.nome = request.form['nome']
-            fornecedor.email = request.form['email']
-            fornecedor.prazo = datetime.strptime(request.form['prazo'], '%Y-%m-%d').date()
+            db.session.delete(fornecedor)
             db.session.commit()
-            flash('Fornecedor atualizado com sucesso!', 'success')
-            return redirect(url_for('index'))
+            flash('Fornecedor excluído com sucesso!', 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f'Erro ao atualizar: {str(e)}', 'danger')
-    return render_template('editar_fornecedor.html', fornecedor=fornecedor)
-
-@app.route('/excluir/<int:id>')
-def excluir_fornecedor(id):
-    fornecedor = Fornecedor.query.get_or_404(id)
-    try:
-        db.session.delete(fornecedor)
-        db.session.commit()
-        flash('Fornecedor excluído com sucesso!', 'success')
-    except Exception as e:
-        db.session.rollback()
-        flash(f'Erro ao excluir: {str(e)}', 'danger')
-    return redirect(url_for('index'))
+            flash(f'Erro ao excluir: {str(e)}', 'danger')
+        return redirect(url_for('index'))
